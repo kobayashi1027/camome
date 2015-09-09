@@ -132,7 +132,7 @@ initDraggableClam = ->
         length =  $(".selected").length
         length = 1 if length is 0
         $("<span style='white-space:nowrap;'>").text length + "mails"
-      revert: "invalid"
+      revert: false
 
 displayCalendar = ->
   if ($('.mini-calendar').is(':visible') != true)
@@ -302,7 +302,10 @@ ready = ->
     showClamPopover(clam) if clam.find('.suggest-icon').size()
   $(this).on 'click','.show-related-task', ->
     $('.calendar-icon').trigger('click')
-    changeRelatedEventColor($(this).attr('task-id'))
+    id = $(this).attr('task-id')
+    setTimeout ->
+      changeRelatedEventColor(id)
+    , 200
   $(this).on 'click', 'a[related-clam-id]', ->
     scrollClamsTable($(this).attr('related-clam-id'))
 
