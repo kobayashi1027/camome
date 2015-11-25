@@ -21,10 +21,6 @@ fullCalendar = ->
         $('#create-event-modal #event-dtend').val(moment(date).format("YYYY/MM/DD H:mm"))
         $('#create-event-modal').modal("show")
 
-    eventClick:
-      (calEvent) ->
-        document.location = "../events/#{calEvent.id}"
-
     dayRender: (date, cell) ->
       cell.droppable
         tolerance: 'pointer'
@@ -38,6 +34,30 @@ fullCalendar = ->
           $('#create-event-modal').modal('show')
 
     eventRender: (event, element) ->
+      ev = getEvent(event.id)
+
+      related_clams =
+        if ev.clams.length
+          buf = "<br>関連するメール:<br>"
+          for clam in ev.clams
+            buf += "<a href='#' related-clam-id='#{clam.id}'>#{clam.summary}</a><br>"
+          buf
+        else ""
+
+      content = """
+        #{event.start.format('YYYY/MM/DD H:mm')} 〜 #{event.end.format('YYYY/MM/DD H:mm')}<br>
+        #{related_clams}
+        <div align="right"><a href='/events/#{event.id}'>詳細</a></div>
+      """
+
+      element.popover
+        html: 'true'
+        container: 'body'
+        trigger: 'click'
+        placement: 'bottom'
+        title: event.title
+        content: content
+
       element.droppable
         tolerance: 'pointer'
         activeClass: 'ui-state-focus'
@@ -222,11 +242,11 @@ changeFixed = (clickedClam) ->
     error: ->
       alert("error")
 
-showPopover = (clickedClam) ->
-  createPopover(clickedClam)
+showClamPopover = (clickedClam) ->
+  createClamPopover(clickedClam)
   clickedClam.find(".suggest-icon").focus()
 
-createPopover = (clickedClam) ->
+createClamPopover = (clickedClam) ->
   id = clickedClam.attr("data-id")
   source_id = getClam(id).reuse_source.id
   event_name = getClam(source_id).events[0].summary
@@ -267,7 +287,7 @@ ready = ->
     showBodyColumns(clam)
     if clam.hasClass("fixed")
       changeFixed(clam)
-    showPopover(clam) if clam.find('.suggest-icon').size()
+    showClamPopover(clam) if clam.find('.suggest-icon').size()
   $(this).on 'click','.show-related-task', ->
     $('.calendar-icon').trigger('click')
     changeRelatedEventColor($(this).attr('task-id'))
