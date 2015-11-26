@@ -40,7 +40,7 @@ fullCalendar = ->
         if ev.clams.length
           buf = "<br>関連するメール:<br>"
           for clam in ev.clams
-            buf += "<a href='#' related-clam-id='#{clam.id}'>#{clam.summary}</a><br>"
+            buf += "<a href='javascript:void(0)' related-clam-id='#{clam.id}'>#{clam.summary}</a><br>"
           buf
         else ""
 
@@ -273,6 +273,18 @@ changeRelatedEventColor = (eventId) ->
     $('#calendar').fullCalendar('updateEvent', event)
   , 200
 
+scrollClamsTable = (clamId) ->
+  $clamsTable = $('.clams-table .fixed-table-body')
+  $clam = $clamsTable.find("[data-id=#{clamId}]")
+
+  $clam.find(".show-clam").click()
+  $clamsTable.find(".clam-body").ready ->
+    clamPosition = $clam.offset().top
+    tableTop = $clamsTable.find("table tbody").offset().top
+    $clamsTable.animate
+      scrollTop: clamPosition - tableTop
+
+
 ready = ->
   initDraggableClam()
   $('.mini-calendar').hide()
@@ -291,6 +303,8 @@ ready = ->
   $(this).on 'click','.show-related-task', ->
     $('.calendar-icon').trigger('click')
     changeRelatedEventColor($(this).attr('task-id'))
+  $(this).on 'click', 'a[related-clam-id]', ->
+    scrollClamsTable($(this).attr('related-clam-id'))
 
 $(document).ready(ready)
 $(document).on('page:load', ready)
