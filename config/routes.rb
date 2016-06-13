@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :states
 
   get "missions/inbox", to: "missions#show"
+  get "missions/clam_template/:id", to: "missions#get_clam_template"
   post "missions/inbox", to: "missions#capture"
   post "missions/:id", to: "missions#capture"
   resources :missions

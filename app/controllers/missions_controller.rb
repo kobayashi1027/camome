@@ -87,6 +87,16 @@ class MissionsController < ApplicationController
       render json: e.message, status: :unprocessable_entity
   end
 
+  # Return clam's html template for displaying in inbox
+  # GET /missions/clam_template/1
+  def get_clam_template
+    @clam = Clam.find(params[:id])
+    @clam.content_type =~ /^Resource::(.*)$/
+    @template = $1 ? $1.downcase : "octet_stream"
+
+    render :action => "clam_template", :layout => false
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_mission
